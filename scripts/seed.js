@@ -1,13 +1,14 @@
-const { sql } = require('@vercel/postgres');
+const { sql } = require("@vercel/postgres");
 const {
   invoices,
   customers,
   revenue,
   users,
-} = require('../app/lib/placeholder-data.js');
-const bcrypt = require('bcrypt');
+} = require("../app/lib/placeholder-data.js");
+const bcrypt = require("bcrypt");
 
 async function seedUsers() {
+  console.log("hello");
   try {
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     // Create the "invoices" table if it doesn't exist
@@ -31,7 +32,7 @@ async function seedUsers() {
         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
-      }),
+      })
     );
 
     console.log(`Seeded ${insertedUsers.length} users`);
@@ -41,7 +42,7 @@ async function seedUsers() {
       users: insertedUsers,
     };
   } catch (error) {
-    console.error('Error seeding users:', error);
+    console.error("Error seeding users:", error);
     throw error;
   }
 }
@@ -70,8 +71,8 @@ async function seedInvoices() {
         INSERT INTO invoices (customer_id, amount, status, date)
         VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
         ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
+      `
+      )
     );
 
     console.log(`Seeded ${insertedInvoices.length} invoices`);
@@ -81,7 +82,7 @@ async function seedInvoices() {
       invoices: insertedInvoices,
     };
   } catch (error) {
-    console.error('Error seeding invoices:', error);
+    console.error("Error seeding invoices:", error);
     throw error;
   }
 }
@@ -109,8 +110,8 @@ async function seedCustomers() {
         INSERT INTO customers (id, name, email, image_url)
         VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
         ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
+      `
+      )
     );
 
     console.log(`Seeded ${insertedCustomers.length} customers`);
@@ -120,7 +121,7 @@ async function seedCustomers() {
       customers: insertedCustomers,
     };
   } catch (error) {
-    console.error('Error seeding customers:', error);
+    console.error("Error seeding customers:", error);
     throw error;
   }
 }
@@ -144,8 +145,8 @@ async function seedRevenue() {
         INSERT INTO revenue (month, revenue)
         VALUES (${rev.month}, ${rev.revenue})
         ON CONFLICT (month) DO NOTHING;
-      `,
-      ),
+      `
+      )
     );
 
     console.log(`Seeded ${insertedRevenue.length} revenue`);
@@ -155,7 +156,7 @@ async function seedRevenue() {
       revenue: insertedRevenue,
     };
   } catch (error) {
-    console.error('Error seeding revenue:', error);
+    console.error("Error seeding revenue:", error);
     throw error;
   }
 }
