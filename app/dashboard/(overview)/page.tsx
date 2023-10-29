@@ -2,38 +2,41 @@ import { Card } from "@/app/ui/dashboard/cards";
 import RevenueChart from "@/app/ui/dashboard/revenue-chart";
 import LatestInvoices from "@/app/ui/dashboard/latest-invoices";
 import { lusitana } from "@/app/ui/fonts";
-import { fetchRevenue } from "../lib/data";
-import { fetchLatestInvoices } from "../lib/data";
-import { fetchCardData } from "../lib/data";
-import { promise } from "zod";
+import { fetchCardData } from "../../lib/data";
+import { Suspense } from "react";
+import {
+  RevenueChartSkeleton,
+  LatestInvoicesSkeleton,
+} from "@/app/ui/skeletons";
 export default async function Page() {
   //----------------------<< fetching data with water-fall >>----------------------
 
-  // const revenue = await fetchRevenue();
-  // const latestInvoices = await fetchLatestInvoices();
+  const {
+    numberOfCustomers,
+    numberOfInvoices,
+    totalPaidInvoices,
+    totalPendingInvoices,
+  } = await fetchCardData();
+
+  //----------------------<< handled fetching data without water-fall >>----------------------
+
+  // const [
+  //   latestInvoices,
+  //   // {
+  //   //   numberOfCustomers,
+  //   //   numberOfInvoices,
+  //   //   totalPaidInvoices,
+  //   //   totalPendingInvoices,
+  //   // },
+  //   cardData,
+  // ] = await Promise.all([fetchLatestInvoices(), fetchCardData()]);
+  // console.log(cardData);
   // const {
   //   numberOfCustomers,
   //   numberOfInvoices,
   //   totalPaidInvoices,
   //   totalPendingInvoices,
-  // } = await fetchCardData();
-
-  //----------------------<< handled fetching data without water-fall >>----------------------
-
-  const [
-    revenue,
-    latestInvoices,
-    {
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices,
-    },
-  ] = await Promise.all([
-    fetchRevenue(),
-    fetchLatestInvoices(),
-    fetchCardData(),
-  ]);
+  // } = cardData;
 
   return (
     <main>
@@ -51,9 +54,15 @@ export default async function Page() {
         />
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <RevenueChart revenue={revenue} />
+        <Suspense fallback={<RevenueChartSkeleton />}>
+          {/* @ts-expect-error server component */}
+          <RevenueChart />
+        </Suspense>
+        <Suspense fallback={<LatestInvoicesSkeleton />}>
+          {/* @ts-expect-error server component */}
 
-        <LatestInvoices latestInvoices={latestInvoices} />
+          <LatestInvoices />
+        </Suspense>
       </div>
     </main>
   );
