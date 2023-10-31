@@ -1,21 +1,39 @@
 "use client";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 
 export default function Search({ placeholder }: { placeholder: string }) {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathName = usePathname();
 
-  function handleSearch(term: string) {
-    const params = new URLSearchParams(searchParams);
-    if (term) params.set("query", term);
-    else {
-      params.delete("query");
-    }
+  const [params, setParams] = useState(new URLSearchParams());
+  const [term, setTerm] = useState("");
 
-    replace(`${pathName}?${params.toString()}`);
+  function handleSearch(term: string) {
+    // const params = new URLSearchParams(searchParams);
+    setParams(new URLSearchParams(searchParams));
+    setTerm(term);
   }
+
+  //------------------<< added debunce >>------------------
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("clicked");
+      console.log(
+        `pathName = ${pathName} searchParam = ${searchParams.toString()}`
+      );
+      if (term) params.set("query", term);
+      else {
+        params.delete("query");
+      }
+
+      replace(`${pathName}?${params.toString()}`);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [searchParams, term]);
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">
