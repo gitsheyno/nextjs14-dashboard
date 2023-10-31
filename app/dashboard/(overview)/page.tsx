@@ -15,7 +15,6 @@ export default async function Page({
   searchParams: { query: string; page: string };
 }) {
   console.log("dashboiard = ", searchParams);
-  //----------------------<< fetching data with water-fall >>----------------------
 
   //----------------------<< handled fetching data without water-fall >>----------------------
 

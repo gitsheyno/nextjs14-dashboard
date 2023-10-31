@@ -8,32 +8,16 @@ export default function Search({ placeholder }: { placeholder: string }) {
   const { replace } = useRouter();
   const pathName = usePathname();
 
-  const [params, setParams] = useState(new URLSearchParams());
-  const [term, setTerm] = useState("");
-
   function handleSearch(term: string) {
-    // const params = new URLSearchParams(searchParams);
-    setParams(new URLSearchParams(searchParams));
-    setTerm(term);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
+    if (term) params.set("query", term);
+    else {
+      params.delete("query");
+    }
+
+    replace(`${pathName}?${params.toString()}`);
   }
-
-  //------------------<< added debunce >>------------------
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log("clicked");
-      console.log(
-        `pathName = ${pathName} searchParam = ${searchParams.toString()}`
-      );
-      if (term) params.set("query", term);
-      else {
-        params.delete("query");
-      }
-
-      replace(`${pathName}?${params.toString()}`);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [searchParams, term]);
 
   return (
     <div className="relative flex flex-1 flex-shrink-0">
