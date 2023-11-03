@@ -1,8 +1,11 @@
 "use server";
+
 import { sql } from "@vercel/postgres";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+//--------------------<< MODEL FOR VALIDATION >>--------------------
 
 const InvoiceSchema = z.object({
   id: z.string(),
@@ -11,6 +14,8 @@ const InvoiceSchema = z.object({
   status: z.enum(["pending", "paid"]),
   date: z.string(),
 });
+
+//--------------------<< ADD INVOICE >>--------------------
 
 const CreateInvoice = InvoiceSchema.omit({ id: true, date: true });
 
@@ -32,6 +37,8 @@ export async function createInvoice(formData: FormData) {
   redirect("/dashboard/invoices");
 }
 
+//--------------------<< UPDATE INVOICE >>--------------------
+
 const UpdateInvoice = InvoiceSchema.omit({ id: true, date: true });
 
 export async function updateInvoice(id: string, formData: FormData) {
@@ -50,4 +57,11 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
+}
+
+//--------------------<< DELETE INVOICE >>--------------------
+
+export async function deleteInvocie(id: string) {
+  await sql`DELETE FROM invoices WHERE id = ${id}`;
+  revalidatePath("/dashboard/invoices");
 }
